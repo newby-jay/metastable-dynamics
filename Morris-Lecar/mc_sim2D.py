@@ -9,7 +9,7 @@ from scipy.interpolate import interp1d
 def simulate_traj(x0, n0, m0, Npoints,
                   epsilon, N, M, gna, vna, gk, vk, gl, vl, Iapp, betana, betak, thetak1, thetak2, thetana1, thetana2,
                   **kwargs):
-    cfile = open('montecarlo/montecarlo2D.c')
+    cfile = open('montecarlo2D.c')
     scode = cfile.read()
     cfile.close()
     t0 = 0.
@@ -37,7 +37,7 @@ def simulate_traj(x0, n0, m0, Npoints,
 def simulate_traj_sep(x0, n0, m0, Npoints, sep,
                       epsilon, N, M, gna, vna, gk, vk, gl, vl, Iapp, betana, betak, thetak1, thetak2, thetana1, thetana2,
                       **kwargs):
-    cfile = open('montecarlo/montecarlo2D.c')
+    cfile = open('montecarlo2D.c')
     scode = cfile.read()
     cfile.close()
     t0 = 0.
