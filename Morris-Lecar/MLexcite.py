@@ -4,12 +4,24 @@
 from pylab import *
 import time
 from scipy.optimize import fsolve
-import scipy.weave
+import weave
 from string import Template
 
 class MLexcite:
     def __init__(self, args):
-        """N, sodium channels. M, potassium channels. gna, sodium conductance. vna, sodium reversal potential. gk, postassium conductance. vk, potassium reversal potential. gl, leak conductance. vl, leak reversal potential. Iapp, applied current. betak, potassium channel rate constant. thetak, potassium channel activation constant. thetana1, sodium channel activation constant. thetana2, sodium channel activation constant.
+        """N, sodium channels.
+        M, potassium channels.
+        gna, sodium conductance.
+        vna, sodium reversal potential.
+        gk, postassium conductance.
+        vk, potassium reversal potential.
+        gl, leak conductance.
+        vl, leak reversal potential.
+        Iapp, applied current.
+        betak, potassium channel rate constant.
+        thetak, potassium channel activation constant.
+        thetana1, sodium channel activation constant.
+        thetana2, sodium channel activation constant.
         """
         for k in args:
             setattr(self, k, args[k])
@@ -50,12 +62,12 @@ class MLexcite:
             dt, rel_err, method = tmax/Ncols, 1e-12, 10
             epsilon, N, M, gna, vna, gk, vk, gl, vl, Iapp, betak, thetak1, thetak2, thetana1, thetana2 = self.parameters
             sol = zeros((4, Ncols))*nan
-            scipy.weave.inline(code, 
-                               ['method', 'Ncols', 'sol', 'x0', 'y0', 'epsilon', 'N', 'M', 'gna', 'vna', 'gk', 'vk', 'gl', 'vl', 'Iapp', 'betak', 'thetak1', 'thetak2', 'thetana1', 'thetana2', 'tmax', 'dt', 'rel_err'], 
-                               support_code = scode, 
-                               libraries=['gsl'], 
-                               include_dirs=['/opt/local/include'], 
-                               library_dirs=['/opt/local/lib'])
+            weave.inline(code,
+               ['method', 'Ncols', 'sol', 'x0', 'y0', 'epsilon', 'N', 'M', 'gna', 'vna', 'gk', 'vk', 'gl', 'vl', 'Iapp', 'betak', 'thetak1', 'thetak2', 'thetana1', 'thetana2', 'tmax', 'dt', 'rel_err'],
+               support_code = scode,
+               libraries=['gsl'],
+               include_dirs=['/opt/local/include'],
+               library_dirs=['/opt/local/lib'])
             traj = dict((k, sol[j, :]) for k, j in zip(['t', 'x', 'y', 's'], arange(4)))
             return traj
         xcinit = deterministic_traj(x0, y0, tinit, Npts)
@@ -236,7 +248,7 @@ class MLexcite:
     def H(self, v, w, p, q):
         "Hamiltonian"
         betak = self.betak; hgam = self.hgam; N = self.N
-        thetana1 = self.thetana1; thetana2 = self.thetana2; thetak1 = self.thetak1; thetak2 = self.thetak2; 
+        thetana1 = self.thetana1; thetana2 = self.thetana2; thetak1 = self.thetak1; thetak2 = self.thetak2;
         minf = self.minf(v)
         fna = self.fna(v)
         g = self.g(v, w)
@@ -245,7 +257,7 @@ class MLexcite:
     def Hx(self, v, w, p, q):
         "partial derivative of the hamiltonian"
         betak = self.betak; hgam = self.hgam; N = self.N
-        thetana1 = self.thetana1; thetana2 = self.thetana2; thetak1 = self.thetak1; thetak2 = self.thetak2; 
+        thetana1 = self.thetana1; thetana2 = self.thetana2; thetak1 = self.thetak1; thetak2 = self.thetak2;
         minf = self.minf(v)
         dminf = (1. - tanh(2.*(self.thetana1*v + self.thetana2))**2)*self.thetana1
         fna = self.fna(v)
@@ -257,7 +269,7 @@ class MLexcite:
     def Hy(self, v, w, p, q):
         "partial derivative of the hamiltonian"
         betak = self.betak; hgam = self.hgam; N = self.N
-        thetana1 = self.thetana1; thetana2 = self.thetana2; thetak1 = self.thetak1; thetak2 = self.thetak2; 
+        thetana1 = self.thetana1; thetana2 = self.thetana2; thetak1 = self.thetak1; thetak2 = self.thetak2;
         minf = self.minf(v)
         fna = self.fna(v)
         g = self.g(v, w)
@@ -267,7 +279,7 @@ class MLexcite:
     def Hp(self, v, w, p, q):
         "partial derivative of the hamiltonian"
         betak = self.betak; hgam = self.hgam; N = self.N
-        thetana1 = self.thetana1; thetana2 = self.thetana2; thetak1 = self.thetak1; thetak2 = self.thetak2; 
+        thetana1 = self.thetana1; thetana2 = self.thetana2; thetak1 = self.thetak1; thetak2 = self.thetak2;
         minf = self.minf(v)
         fna = self.fna(v)
         g = self.g(v, w)
@@ -275,12 +287,12 @@ class MLexcite:
     def Hq(self, v, w, p, q):
         "partial derivative of the hamiltonian"
         betak = self.betak; hgam = self.hgam; N = self.N
-        thetana1 = self.thetana1; thetana2 = self.thetana2; thetak1 = self.thetak1; thetak2 = self.thetak2; 
+        thetana1 = self.thetana1; thetana2 = self.thetana2; thetak1 = self.thetak1; thetak2 = self.thetak2;
         return betak*(-w*exp((thetak1*v + thetak2))*exp(-hgam*q) + (1-w)*exp(-(thetak1*v + thetak2))*exp(hgam*q))
     def Hpp(self, v, w, p, q):
         "partial derivative of the hamiltonian"
         betak = self.betak; hgam = self.hgam; N = self.N
-        thetana1 = self.thetana1; thetana2 = self.thetana2; thetak1 = self.thetak1; thetak2 = self.thetak2; 
+        thetana1 = self.thetana1; thetana2 = self.thetana2; thetak1 = self.thetak1; thetak2 = self.thetak2;
         minf = self.minf(v)
         fna = self.fna(v)
         g = self.g(v, w)

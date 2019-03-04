@@ -3,7 +3,7 @@
 
 from pylab import *
 from string import Template
-import scipy.weave
+import weave
 from scipy.interpolate import interp1d
 
 class GMAM:
@@ -27,7 +27,7 @@ class GMAM:
         code = code_template.substitute(self.func_string)
         self.scode = code
         cfile.close()
-    def __run__(self, Npnts, Niter, dt, x, y, tol = 1e-13):
+    def __call__(self, Npnts, Niter, dt, x, y, tol = 1e-13):
         """
         Input
         -------------
@@ -49,10 +49,10 @@ class GMAM:
         t, s = zeros(Npnts+1).astype(double), zeros(Npnts+1).astype(double)
         p, q = zeros(Npnts+1).astype(double), zeros(Npnts+1).astype(double)
         phi = zeros(Npnts+1).astype(double)
-        scipy.weave.inline(code, ['t', 's', 'x', 'y', 'p', 'q', 'phi', 'Npnts', 'Niter', 'dt', 'pars', 'tol'], 
+        weave.inline(code, ['t', 's', 'x', 'y', 'p', 'q', 'phi', 'Npnts', 'Niter', 'dt', 'pars', 'tol'],
                                    support_code = self.scode,
-                                   libraries=['gsl'], 
-                                   include_dirs=['/opt/local/include'], 
+                                   libraries=['gsl'],
+                                   include_dirs=['/opt/local/include'],
                                    library_dirs=['/opt/local/lib'],
                                    auto_downcast = 1)
         return {'t': t, 's': s, 'x': x, 'y': y, 'p': p, 'q': q, 'phi': phi}
