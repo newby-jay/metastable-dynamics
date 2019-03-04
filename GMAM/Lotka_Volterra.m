@@ -1,5 +1,5 @@
 %%%% To compile, you need to install the mex toolboxes (I think)
-%%%% The command is "mex -output gmam_mex gmam*.c"
+%%%% The command is "mex -output Lotka_Volterra_mex *.c"
 
 %% Model parameters
 alpha = 4.0;
